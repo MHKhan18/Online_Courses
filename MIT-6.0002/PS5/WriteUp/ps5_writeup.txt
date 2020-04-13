@@ -1,0 +1,53 @@
+A4)
+I) Graph with yearly temperatures has higher r-squared value than the graph with data points from a specific day. This implies the linear model for the dataset with temperatures form a specifc day could only explain 5% of the variance of the temperatures, while the linear model for the dataset with average annual temperatures can explain about 19% of the variance of the temperatures.
+II) Both the graphs plot temperatures from only one city, which might account for large variation in data.
+The graph with temperature from a single day across years is noisier than the graph with average annual temperatures.
+III) The linear model for both the grpahs have positive slopes, implying an association between increasing temperatures and progression of years. However, both the models on A4I and A4II have large SE/Slope values, 0.61 and 0.30 respectively. Since there are 61% and 30% chances that the positive correlation between temperature and years is by chance, no definite conclusion can be reached.
+==================================================
+B)
+I) The graph generated in problem B have temperature data points that fit the positive correlation between temperature and years more strongly, with the linear model having a r-squared value of 0.75. Also, the SE/Slope value of 0.09 is lower than that of both the graphs in A - so there is only 0.09 probability that this correlation is by chance. 
+
+II) Each temperature data in this plot is the mean of mean anuual temperatures across 21 different cities, so there is more stability in the pattern of the data points. Relying on a sinlge raw data point or a few records from only one area could produce more noisy data like in part A.
+
+III) I would expect lower r-squared value and higher SE/Slope value if only 3 ciites were used ( fewer data points) and higher r-squared values and lower SE/Slope values if 100 different cities were used ( more data points).
+
+IV) I would expect higher r-squared values and lower SE/Slope values if all the cities were from same region as they are expected to have similar temperatures, but they would not be a better representative of the national temperature.
+====================================================
+C)
+I) The graph in part C is similar to the graph in part B, with R-squared value of 0.74 and SE/Slope value of 0.08. This implies strong positive correlation between temperatures and years and thre is small probability that this correlation is by chance/random. So, this result supports the claims of global warming.
+
+II) This is beacuse each temperature point in this plot are the same as the points in part B, except that each point is the average of three consecutive points.
+====================================================
+D)
+2.I)
+I)One model is a linear model, like the previous parts. Another one is a quadratic one and the other one is a degree 20 polynomial.
+II) Both the degree 2 and degree 20 polynomials have approximately same r-squared values ( 0.77 and 0.76 respectively ),  which is slighly higher than the linear model, which has r-squared value of 0.74. This may be because of slightly more noisy
+temperature points in the plot for the years following 2000 and the higher degree polynomials being able to to change directions.
+
+III) The quadratic model best fits the data as the 20 degree polynomial may be over-fitting the points and the linear model has slight lower r-squared value.
+====================================================
+2.II)
+I) RMSE of linear model = 0.088
+   RMSE of quadratic model = 0.212
+   RMSE of 20-degree polynomial model= 1.491
+   
+II) So, the linear model performed the best, followed by the quadratic model and then the 20-degree polynomial. This is not the same as D.2.I where the quadratic and 20-polynomial models performed better than the linear model. This may be because these higher degree models overfit the training data.
+
+III)The predictions would be similar.The linear model would have still been the best with positive correlation between temperature and years. And the higher degree polynomials would have produced more complex models, fitting the noisy training data tightly and thus preforming not so well on the test data. 
+====================================================
+E)
+I) The linear model for the dataset represents a negative correlation between temperature and years, i.e. the standard deviation of temperatures is decreasing with progression of years, which is in contrast with our claims.However, the SE/Slope value is large, implying there is a 0.44 probability that this correlation is occuring by chance. So, our claims are not completely obliterated yet!
+
+II) Our analysis could have been improved by finding the standard deviation of the temperature of the cities and taking average of those standard deviations over the years rather than taking the standard deviation of the average temperature of the cities.
+
+
+
+
+  
+
+
+
+
+
+
+ 
