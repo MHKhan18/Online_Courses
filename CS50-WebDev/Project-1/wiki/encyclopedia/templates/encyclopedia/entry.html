@@ -1,0 +1,20 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block form %}
+    {{ search_bar }}
+{% endblock %}
+
+{% block body %}
+    <div align="right">
+        <a href="{% url 'edit' title %}">Edit Page</a>
+    </div>
+    {% if available %}
+        <p>{{content | safe}}</p>
+    {% else %}
+        <h2>Sorry, {{title}} does not exist!</h2>
+    {% endif %}
+{% endblock %}

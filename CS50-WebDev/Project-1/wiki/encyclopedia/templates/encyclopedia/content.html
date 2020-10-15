@@ -1,0 +1,26 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block form %}
+    {{ search_bar }}
+{% endblock %}
+
+{% block h1 %}
+    <h1>
+        {{heading}}
+    </h1>
+{% endblock %}
+
+{% block body %}
+
+<form action="{% url 'create' %}" method="post">
+    {% csrf_token %}
+    {{ content.as_p }} 
+    <br/>
+    <input type="submit" >
+</form>
+
+{% endblock %}

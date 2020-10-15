@@ -1,0 +1,31 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block form %}
+    {{ search_bar }}
+{% endblock %}
+
+
+{% block h1 %}
+    <h1>
+        {{heading}}
+    </h1>
+    
+{% endblock %}
+
+{% block body %}
+
+    <ul>
+        {% for entry in entries %}
+            <li>
+                <a href="{% url 'page' entry %}">{{entry}}</a> 
+            </li>
+        {% empty %}
+            <h2>Sorry, no available pages for this query.</h2>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
