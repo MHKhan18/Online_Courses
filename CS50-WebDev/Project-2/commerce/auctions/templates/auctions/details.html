@@ -1,0 +1,53 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{listing.title}}</h2>
+
+    {% if can_watchlist %}
+        <form action="{% url 'watchlist' listing.title %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Watchlist">
+        </form>
+    
+    {% else %}
+        <form action="{% url 'rm_watchlist' listing.title %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Remove From Watchlist">
+        </form>
+
+    {% endif %}
+
+    <br>
+
+    {% if listing.image %}
+        <img src={{ listing.image.url }} alt="Product Image">
+    {% else %}
+        <p> No image listed. </p>
+    {% endif %}
+
+    <p>{{ listing.description }}</p>
+
+    <h2><span>&#36;</span>{{ listing.bid }}</h2>
+    
+    {% if status %}
+        <p>{{ status }}</p>
+    {% endif %}
+    
+    <form action="{% url 'bids' listing.title %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Place Bid">
+    </form>
+
+    <br>
+
+    <h4>Details</h4>
+    <ul>
+        <li>Listed by: {{listing.owner.username}}</li>
+        {% if listing.category != "None" %}
+            <li> Category: {{listing.category}} </li>
+        {% else %}
+            <li> Category: No category listed </li>
+        {% endif %}
+    </ul>
+{% endblock %}
