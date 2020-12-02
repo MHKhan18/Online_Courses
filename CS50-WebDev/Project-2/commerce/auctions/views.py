@@ -134,7 +134,8 @@ def listing_details(request , name:str):
         prev_max = prev_bids.aggregate(Max('placed_bid'))["placed_bid__max"]
         status = f"{num_bids} bid(s) so far, going at ${prev_max}"
 
-    return render(request , "auctions/details.html", {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , "status" : status})
+    return render(request , "auctions/details.html", 
+    {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , "status" : status , "num_bids" : num_bids})
     
 @login_required(login_url='/login')
 def add_watchlist(request , name:str):
@@ -178,8 +179,8 @@ def add_bid(request , name:str):
             if num_bids > 0:
                 prev_max = prev_bids.aggregate(Max('placed_bid'))["placed_bid__max"]
                 
-            if (num_bids == 0 and new_bid < listing.bid) or new_bid < prev_max:
-                status = "Error: Only bids that are at least current max are accepted."
+            if (num_bids == 0 and new_bid < listing.bid) or new_bid <= prev_max:
+                status = "Error: Only bids that are greater than current going rate are accepted."
             else:
                 bid_added = Bid(placed_bid = new_bid , customer = request.user , listing = listing)
                 bid_added.save()
@@ -194,3 +195,16 @@ def add_bid(request , name:str):
             return render(request , "auctions/details.html", {"listing" : listing , "form" : bid_form , "can_watchlist" : can_watchlist , "status" : status})
 
 
+@login_required(login_url='/login')
+def close_auction(request , name:str):
+    listing = Listings.objects.filter(title=name).first()
+    bids = listing.all_bids.all()
+    max_bid = bids.aggregate(Max('placed_bid'))["placed_bid__max"]
+    win_bid = Bid.objects.filter(listing__title = name , placed_bid = max_bid).first()
+    listing.is_won = True
+    listing.save()
+    listing.winner = win_bid.customer
+    listing.save()
+    listing.win_price = max_bid
+    listing.save()
+    return HttpResponseRedirect(reverse("details", args=(name,)))

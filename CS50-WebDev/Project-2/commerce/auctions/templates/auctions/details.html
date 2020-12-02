@@ -29,15 +29,37 @@
 
     <h2><span>&#36;</span>{{ listing.bid }}</h2>
     
-    {% if status %}
+    {% if status and listing.is_won == False %}
         <p>{{ status }}</p>
     {% endif %}
     
-    <form action="{% url 'bids' listing.title %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Place Bid">
-    </form>
+    {% if user.is_authenticated and listing.owner.username != user.username and listing.is_won == False %}
+
+        <form action="{% url 'bids' listing.title %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Place Bid">
+        </form>
+    {% endif %}
+
+    {% if user.is_authenticated and listing.owner.username != user.username and listing.is_won == True and listing.winner.username == user.username %}
+        <h7>Congratulations! You have won the auction at {{ listing.win_price }}</h7>
+    {% endif %}
+
+    {% if user.is_authenticated and listing.owner.username != user.username and listing.is_won == True and listing.winner.username != user.username %}
+        <h7>Sorry, the auction closed at {{ listing.win_price }}.</h7>
+    {% endif %}
+
+    {% if user.is_authenticated and listing.owner.username == user.username and num_bids > 0 and listing.is_won == False %}
+        <form action="{% url 'close' listing.title %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Close Auction">
+        </form>
+    {% endif %}
+
+    {% if user.is_authenticated and listing.owner.username == user.username and listing.is_won == True %}
+        <h7>You sold this item at {{ listing.win_price }}.</h7>
+    {% endif %}
 
     <br>
 

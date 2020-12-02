@@ -13,9 +13,15 @@ class Listings(models.Model):
     image = models.ImageField(upload_to='images',blank=True, null=True)
     category = models.CharField(max_length=10)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
+    is_won = models.BooleanField(default=False)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="won" , blank=True, null=True )
+    win_price = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
 
     def __str__(self):
-        return f'title: {self.title} , bid: {self.bid} , owner: {self.owner.username} , image: {self.image} , category: {self.category}'
+        return f'title: {self.title} , bid: {self.bid} , owner: {self.owner.username} , \
+                image: {self.image} , category: {self.category} , is_won: {self.is_won} , \
+                winner: {self.winner.username if self.winner else None} , \
+                win_price: {self.win_price if self.winner else None} '
 
 
 class Bid(models.Model):
