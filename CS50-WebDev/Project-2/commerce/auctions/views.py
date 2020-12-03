@@ -157,7 +157,7 @@ def add_watchlist(request , name:str):
 def remove_watchlist(request , name:str):
     
     listing = Listings.objects.filter(title=name).first()
-    watch_item =  Watchlist.objects.filter(customer__username = request.user.username , listing__title = listing.title)
+    watch_item =  Watchlist.objects.filter(customer__username = request.user.username , listing__title = listing.title).first()
     watch_item.delete()
     
     return HttpResponseRedirect(reverse("details", args=(name,)))
@@ -255,3 +255,9 @@ def add_comment(request , name:str):
             return render(request , "auctions/details.html", {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , 
                         "status" : status , "num_bids" : num_bids , "comment_form" : comment_form ,"comments" : comments})
             
+
+@login_required(login_url='/login')
+def get_watchlist(request):
+    watchlist_items = request.user.watchlist.all()
+    listings = [item.listing for item in watchlist_items]
+    return render(request, "auctions/watchlist.html" , {"listings" : listings})
