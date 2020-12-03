@@ -13,7 +13,7 @@ from django.db.models import Max
 
 
 CATEGORY_CHOICES = [
-    ('None' , ''),
+    ('Uncategorized' , ''),
     ('Fashion' , 'Fashion'),
     ('Toys' , 'Toys'),
     ('Electronics' , 'Electronics'),
@@ -261,3 +261,13 @@ def get_watchlist(request):
     watchlist_items = request.user.watchlist.all()
     listings = [item.listing for item in watchlist_items]
     return render(request, "auctions/watchlist.html" , {"listings" : listings})
+
+def get_categories(request):
+    CATEGORY_CHOICES.reverse()
+    categories = [choice[0] for choice in CATEGORY_CHOICES ]
+    return render(request, "auctions/categories.html" , {"categories" : categories})
+
+def cat_items(request , name:str):
+
+    listings = Listings.objects.filter(category = name).all()
+    return render(request, "auctions/cat_items.html" , {"category" : name , "listings" : listings})

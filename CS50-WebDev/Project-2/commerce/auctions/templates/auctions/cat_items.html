@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h4>All available items of category {{category}}:</h4>
+    <hr>
+    <hr>
+    {% for listing in listings %}
+        
+        {% if listing.is_won == False %}
+            <a href="{% url 'details' listing.title %}" >
+                <h4>{{ listing.title }}</h4>
+            </a>
+            
+            <p>{{ listing.description }}</p>
+            <p>Starting bid at: ${{ listing.bid }}</p>
+
+            {% if listing.image %}
+                <img src={{ listing.image.url }} alt="Product Image">
+            {% endif %}
+        
+            {% endif %}
+        <hr>
+    {% empty %}
+        <h4>Sorry, we do not have any items of category {{category}} at this moment.</h4>
+    {% endfor %}
+
+{% endblock %}
