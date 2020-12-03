@@ -33,6 +33,9 @@ class CreateListingsForm(forms.Form):
 class BidForm(forms.Form):
     bid = forms.DecimalField(decimal_places=2 , widget=forms.TextInput(attrs={'placeholder': 'Bid'}))
 
+class CommentForm(forms.Form):
+    comment = forms.CharField(label="Comment:", max_length = 1000 , widget = forms.Textarea(attrs={'placeholder': 'Up to 1000 characters'}))
+
 
 def index(request):
     listings = Listings.objects.all()
@@ -123,6 +126,7 @@ def listing_details(request , name:str):
     
     listing = Listings.objects.filter(title=name).first()
     form = BidForm()
+    comment_form = CommentForm()
 
     watchlist = Watchlist.objects.filter(customer__username = request.user.username , listing__title = listing.title).first()
     can_watchlist = True if watchlist == None else False
@@ -134,8 +138,11 @@ def listing_details(request , name:str):
         prev_max = prev_bids.aggregate(Max('placed_bid'))["placed_bid__max"]
         status = f"{num_bids} bid(s) so far, going at ${prev_max}"
 
+    comments = listing.all_comments.all()
+
     return render(request , "auctions/details.html", 
-    {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , "status" : status , "num_bids" : num_bids})
+    {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , "status" : status , 
+    "num_bids" : num_bids , "comment_form" : comment_form , "comments" : comments})
     
 @login_required(login_url='/login')
 def add_watchlist(request , name:str):
@@ -160,9 +167,12 @@ def add_bid(request , name:str):
 
     listing = Listings.objects.filter(title=name).first()
     form = BidForm()
+    comment_form = CommentForm()
 
     watchlist = Watchlist.objects.filter(customer__username = request.user.username , listing__title = listing.title).first()
     can_watchlist = True if watchlist == None else False
+
+    comments = listing.all_comments.all()
 
     if request.method == "POST":
         
@@ -186,13 +196,15 @@ def add_bid(request , name:str):
                 bid_added.save()
                 status = f"{num_bids+1} bid(s) so far. Your bid (${new_bid}) is the current bid."
 
-            return render(request , "auctions/details.html", {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , "status" : status})
+            return render(request , "auctions/details.html", {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , 
+                            "status" : status , "num_bids" : num_bids , "comment_form" : comment_form ,"comments" : comments})
 
 
 
         else:
             status = "Error: Please enter valid bid."
-            return render(request , "auctions/details.html", {"listing" : listing , "form" : bid_form , "can_watchlist" : can_watchlist , "status" : status})
+            return render(request , "auctions/details.html", {"listing" : listing , "form" : bid_form , "can_watchlist" : can_watchlist , 
+                        "status" : status, "num_bids" : num_bids , "comment_form" : comment_form ,"comments" : comments})
 
 
 @login_required(login_url='/login')
@@ -208,3 +220,38 @@ def close_auction(request , name:str):
     listing.win_price = max_bid
     listing.save()
     return HttpResponseRedirect(reverse("details", args=(name,)))
+
+@login_required(login_url='/login')
+def add_comment(request , name:str):
+    
+    listing = Listings.objects.filter(title=name).first()
+    
+    form = BidForm()
+    input_form = CommentForm()
+    
+    watchlist = Watchlist.objects.filter(customer__username = request.user.username , listing__title = listing.title).first()
+    can_watchlist = True if watchlist == None else False
+
+    prev_bids = listing.all_bids.all()
+    num_bids = prev_bids.count()
+    status = "No bid yet, be the first!"
+    if num_bids > 0:
+        prev_max = prev_bids.aggregate(Max('placed_bid'))["placed_bid__max"]
+        status = f"{num_bids} bid(s) so far, going at ${prev_max}"
+    
+    if request.method == "POST":
+        comment_form = CommentForm(request.POST)
+
+        if comment_form.is_valid():
+            user_comment = comment_form.cleaned_data["comment"]
+            comment_item = Comments(comment = user_comment , customer = request.user , listing = listing)
+            comment_item.save()
+
+            comments = listing.all_comments.all()
+            return render(request , "auctions/details.html", {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , 
+                          "status" : status , "num_bids" : num_bids , "comment_form" : input_form ,"comments" : comments})
+        
+        else:
+            return render(request , "auctions/details.html", {"listing" : listing , "form" : form , "can_watchlist" : can_watchlist , 
+                        "status" : status , "num_bids" : num_bids , "comment_form" : comment_form ,"comments" : comments})
+            
