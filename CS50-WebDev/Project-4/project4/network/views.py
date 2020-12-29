@@ -6,7 +6,7 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.decorators import login_required
 
-from .models import User , Post
+from .models import User , Post , Profile
 
 
 class NewPostForm(forms.Form):
@@ -91,3 +91,52 @@ def create_post(request):
         return render(request , "network/create.html" , {
             "form" : NewPostForm()
         })
+
+@login_required(login_url='/login')
+def profile(request , name):
+
+    profile = Profile.objects.filter(user__username=name).first()
+    followers = profile.followers.count()
+    user = profile.user
+    following = user.following.count()
+    posts = Post.objects.filter(author=user).all()
+
+    if name == request.user.username:
+        button = None
+    else:
+        client = request.user.username
+        is_following = False
+        for follower in profile.followers.all():
+            if follower.username == client:
+                is_following = True 
+        if is_following:
+            button = "Unfollow"
+        else:
+            button = "Follow"
+
+        
+    context = {
+        "name" : name,
+        "followers" : followers,
+        "following" : following,
+        "posts" : posts,
+        "button" : button,
+    }
+    return render(request , "network/profile.html" , context)
+
+
+@login_required(login_url='/login')
+def follow(request , name):
+    user = request.user
+    profile = Profile.objects.filter(user__username=name).first()
+    profile.followers.add(user)
+    return HttpResponseRedirect(reverse("profile", args=(name,)))
+
+
+
+@login_required(login_url='/login')
+def unfollow(request , name):
+    user = request.user
+    profile = Profile.objects.filter(user__username=name).first()
+    profile.followers.remove(user)
+    return HttpResponseRedirect(reverse("profile", args=(name,)))
