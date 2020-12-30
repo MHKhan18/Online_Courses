@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 from .models import User , Post , Profile
 
@@ -13,7 +15,18 @@ class NewPostForm(forms.Form):
     content = forms.CharField(label="" ,  max_length = 1000 , widget = forms.Textarea(attrs={'placeholder': 'Up to 1000 characters'}))
 
 def index(request):
-    posts = Post.objects.all()
+    posts_list = Post.objects.all()
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(posts_list , 10)
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+
     return render(request, "network/index.html" , {
         "posts" : posts,
     })
@@ -99,7 +112,17 @@ def profile(request , name):
     followers = profile.followers.count()
     user = profile.user
     following = user.following.count()
-    posts = Post.objects.filter(author=user).all()
+    posts_list = Post.objects.filter(author=user).all()
+
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(posts_list , 10)
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
 
     if name == request.user.username:
         button = None
@@ -143,18 +166,24 @@ def unfollow(request , name):
 
 @login_required(login_url='/login')
 def following(request):
-    posts = []
+    posts_list = []
     
     friends = request.user.following.all()
     for friend in friends:
         cur_posts = Post.objects.filter(author = friend.user).all()
-        posts += cur_posts
+        posts_list += cur_posts
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(posts_list , 10)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
 
     return render(request, "network/index.html" , {
         "posts" : posts,
     })
 
-    
-
-
-    
