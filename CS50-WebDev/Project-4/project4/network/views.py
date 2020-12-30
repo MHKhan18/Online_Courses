@@ -140,3 +140,21 @@ def unfollow(request , name):
     profile = Profile.objects.filter(user__username=name).first()
     profile.followers.remove(user)
     return HttpResponseRedirect(reverse("profile", args=(name,)))
+
+@login_required(login_url='/login')
+def following(request):
+    posts = []
+    
+    friends = request.user.following.all()
+    for friend in friends:
+        cur_posts = Post.objects.filter(author = friend.user).all()
+        posts += cur_posts
+
+    return render(request, "network/index.html" , {
+        "posts" : posts,
+    })
+
+    
+
+
+    
