@@ -22,6 +22,16 @@ class Post(models.Model):
                 Likes: {self.likes}, \n \
                 Created At: {self.created}, \n \
                 Last Modified: {self.updated}'
+
+    def serialize(self):
+        return {
+            'Author ' : self.author.username,
+            'Content ' : self.content,
+            'Likes ' : self.likes,
+            'Created At ' : self.created,
+            'Last Modified ': self.updated
+        }
+
     class Meta:
         ordering = ['-created']
 

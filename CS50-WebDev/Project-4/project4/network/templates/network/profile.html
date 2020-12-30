@@ -1,4 +1,5 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
 
@@ -21,11 +22,28 @@
     <p>Following: {{following}}</p>
     {% for post in posts %}
         <div class="post-container">
+            
             <h5><a href="{% url 'profile' post.author.username %}">{{post.author.username}}</a></h5>
-            <p>{{post.content}}</p>
-            <p>{{post.created}}</p>
+
+            {% if user.username == post.author.username %}
+                <p class = "edit"><a  href="#0">Edit</a></p>
+            
+                <span class="id" style="display:none">{{ post.id }}</span>
+
+                <form class="edit-form" style="display:none">
+                    <textarea class="form-control new-content">{{post.content}}</textarea>
+                    <input type="submit" class="btn btn-primary save" value = "Save" />
+                </form>
+
+            {% endif %}
+            
+            <p class="content">{{post.content}}</p>
+            <p><small class="text-muted">Created At: {{ post.created }}</small></p>
+
             <span class="like-button">&#9825;</span>
+
             <span>{{post.likes}}</span>
+
         </div>
     {% endfor %}
 
@@ -49,4 +67,8 @@
         {% endif %}
     {% endif %}
     
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/edit_like.js' %}"></script>
 {% endblock %}
