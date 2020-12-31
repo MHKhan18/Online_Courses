@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     for(let i=0; i < like_buttons.length; i++){
         like_buttons[i].addEventListener('click' , (event)=>{ like_post(event) });
     }
-    
+
 });
 
 
@@ -89,7 +89,7 @@ function like_post(event){
     event.preventDefault();
 
     const button = event.target;
-    const parent_div = button.parentNode.parentNode;
+    const parent_div = button.parentNode;
     const post_id = parent_div.querySelector('.id').innerHTML;
     
 

@@ -42,9 +42,9 @@
             
             {% if user.is_authenticated %}
                 {% if post.id in liked_posts %}
-                    <a href="{% url 'like' post.id %}"><span style="color:red" class="like">&hearts;</span></a>
+                    <span style="color:red" class="like">&hearts;</span>
                 {% else %}
-                    <a href="{% url 'like' post.id %}"><span style="color:grey" class="like">&hearts;</span></a>
+                    <span style="color:grey" class="like">&hearts;</span>
                 {% endif %}
                 <span class="count">{{post.likes.count}}</span>
             {% endif %}
