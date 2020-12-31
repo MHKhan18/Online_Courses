@@ -7,11 +7,11 @@
             
             <h5><a href="{% url 'profile' post.author.username %}">{{post.author.username}}</a></h5>
 
+            <span class="id" style="display:none">{{ post.id }}</span>
+
             {% if user.username == post.author.username %}
                 <p class = "edit"><a  href="#0">Edit</a></p>
             
-                <span class="id" style="display:none">{{ post.id }}</span>
-
                 <form class="edit-form" style="display:none">
                     <textarea class="form-control new-content">{{post.content}}</textarea>
                     <input type="submit" class="btn btn-primary save" value = "Save" />
@@ -21,10 +21,15 @@
             
             <p class="content">{{post.content}}</p>
             <p><small class="text-muted">Created At: {{ post.created }}</small></p>
-
-            <span class="like-button">&#9825;</span>
-
-            <span>{{post.likes}}</span>
+            
+            {% if user.is_authenticated %}
+                {% if post.id in liked_posts %}
+                    <a href="{% url 'like' post.id %}"><span style="color:red" class="like">&hearts;</span></a>
+                {% else %}
+                    <a href="{% url 'like' post.id %}"><span style="color:grey" class="like">&hearts;</span></a>
+                {% endif %}
+                <span class="count">{{post.likes.count}}</span>
+            {% endif %}
 
         </div>
     {% endfor %}

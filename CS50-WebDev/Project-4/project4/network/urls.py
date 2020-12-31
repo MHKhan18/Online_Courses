@@ -17,5 +17,6 @@ urlpatterns = [
 
     #API routes
     path("edit/<int:post_id>", views.edit, name="edit"),
+    path("like/<int:post_id>", views.like, name="like"),
 
 ]

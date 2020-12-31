@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User , Post , Profile
+from .models import User , Post , Profile , Like
 
 import json
 
@@ -28,9 +28,17 @@ def index(request):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
 
+    user = request.user
+    if user.is_authenticated:
+        user_likes = user.likes.all()
+        liked_posts = [like.post.id for like in user_likes]
+    else:
+        liked_posts = []
+
 
     return render(request, "network/index.html" , {
         "posts" : posts,
+        "liked_posts" : liked_posts,
     })
 
 
@@ -139,6 +147,9 @@ def profile(request , name):
         else:
             button = "Follow"
 
+    user = request.user
+    user_likes = user.likes.all()
+    liked_posts = [like.post.id for like in user_likes]
         
     context = {
         "name" : name,
@@ -146,6 +157,7 @@ def profile(request , name):
         "following" : following,
         "posts" : posts,
         "button" : button,
+        "liked_posts" : liked_posts,
     }
     return render(request , "network/profile.html" , context)
 
@@ -185,8 +197,14 @@ def following(request):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
 
+    user = request.user
+    user_likes = user.likes.all()
+    liked_posts = [like.post.id for like in user_likes]
+
+
     return render(request, "network/index.html" , {
         "posts" : posts,
+         "liked_posts" : liked_posts,
     })
 
 
@@ -213,3 +231,30 @@ def edit(request, post_id):
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
+
+@login_required
+def like(request , post_id):
+
+    
+    user = request.user # can't get this in js!
+    post = Post.objects.filter(id=post_id).first()
+
+    to_like = False
+    like = Like.objects.filter(user=user , post=post).first()
+    if like:
+        like.delete()
+    else:
+        to_like = True
+        like = Like(user=user , post=post)
+        like.save()
+
+    response = {
+        "post_id" : post_id,
+        "to_like": to_like,
+    }
+    response = json.dumps(response)
+    return HttpResponse(response, content_type = "application/json")
+
+    
+
+

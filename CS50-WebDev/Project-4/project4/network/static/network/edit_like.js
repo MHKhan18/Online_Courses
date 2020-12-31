@@ -73,4 +73,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
     }
+
+    let like_button = document.querySelectorAll('.like');
+    
+    for(let i=0; i < like_button.length; i++){
+        
+        like_button[i].addEventListener('click' , (event)=>{
+            
+            event.preventDefault();
+
+            const button = event.target;
+            const parent_div = button.parentNode.parentNode;
+            const post_id = parent_div.querySelector('.id').innerHTML;
+            
+
+            const counts = parent_div.querySelector('.count');
+            const num_likes = parseInt(counts.innerHTML);
+            
+            fetch(`/like/${post_id}`)
+                .then(response => response.json())
+                .then( (result) => {
+                    if(result["to_like"]){
+                        button.style.color = 'red';
+                        counts.innerHTML = num_likes+1;
+                    }
+                    else{
+                        button.style.color = 'grey';
+                        counts.innerHTML = num_likes-1;
+                    }
+                })
+        })
+    }
 });

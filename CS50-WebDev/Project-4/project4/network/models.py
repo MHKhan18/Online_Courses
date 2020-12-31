@@ -11,7 +11,6 @@ class User(AbstractUser):
 class Post(models.Model):
     author = models.ForeignKey(User , on_delete=models.CASCADE , related_name="submissions")
     content = models.CharField(max_length=1000)
-    likes = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -49,3 +48,11 @@ def create_profile(sender , instance , created , **kwargs):
 def update_profile(sender , instance , created , **kwargs):
     if not created:
         instance.profile.save() 
+
+class Like(models.Model):
+    user = models.ForeignKey(User , on_delete=models.CASCADE , related_name="likes")
+    post = models.ForeignKey(Post , on_delete=models.CASCADE , related_name="likes")
+
+    def __str__(self):
+        return f'User: {self.user.username}, \n \
+                 Post: {self.post.id}'
