@@ -9,8 +9,9 @@ textarea{
 
 .post-container{
     border: thin solid grey;
+    border-radius: 10px;
     margin-bottom: 10px;
-    padding: 5px;
+    padding: 10px;
 }
 
 .follow{

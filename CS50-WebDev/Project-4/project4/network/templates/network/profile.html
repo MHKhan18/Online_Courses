@@ -38,7 +38,12 @@
             {% endif %}
             
             <p class="content">{{post.content}}</p>
-            <p><small class="text-muted">Created At: {{ post.created }}</small></p>
+            
+            <small class="text-muted">Created At: {{ post.created }}</small>
+            <br>
+            <small class="text-muted">Last Modified: {{ post.updated }}</small>
+            <br>
+            <br>
             
             {% if user.is_authenticated %}
                 {% if post.id in liked_posts %}
